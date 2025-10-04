@@ -79,6 +79,10 @@ public class FightService {
 
             fightScreenService.printScreen(player, enemy);
         }
+
+
+        gameState.setPlayerCanFatality(false);
+        gameState.setPlayerCanHeal(false);
     }
 
     public FighterInfo getFighter(final String code) throws Exception {
