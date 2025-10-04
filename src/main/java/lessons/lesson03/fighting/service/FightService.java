@@ -60,13 +60,13 @@ public class FightService {
             if (enemy.getState().equals(FighterState.DIE)) {
                 Utils.clearTerminal();
                 System.out.println("YOU WON!");
-                return;
+                break;
             }
 
             if (player.getState().equals(FighterState.DIE)) {
                 Utils.clearTerminal();
                 System.out.println("YOU LOST!");
-                return;
+               break;
             }
 
             if (!player.getState().equals(FighterState.BLOCK)) {
@@ -79,7 +79,6 @@ public class FightService {
 
             fightScreenService.printScreen(player, enemy);
         }
-
 
         gameState.setPlayerCanFatality(false);
         gameState.setPlayerCanHeal(false);
