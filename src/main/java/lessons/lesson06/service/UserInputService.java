@@ -25,14 +25,14 @@ public class UserInputService {
         return validBusinessRow || validBrokeRow;
     }
 
-    public String promptSeatCodeToBook() {
+    public String promptSeatCodeToBook(final Integer flightId) {
         String code = promptSeatCode();
 
-        boolean isPlaceBooked = bookingRepository.existsByCode(code);
+        boolean isPlaceBooked = bookingRepository.existsByFlightIdAndCode(flightId, code);
 
         if (isPlaceBooked) {
             System.out.println("Place is already book. Please choose another one");
-            return promptSeatCodeToBook();
+            return promptSeatCodeToBook(flightId);
         }
 
         return code;

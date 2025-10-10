@@ -3,9 +3,17 @@ package lessons.lesson06;
 import lessons.lesson06.db.Booking;
 import lessons.lesson06.db.BookingDbManager;
 import lessons.lesson06.db.BookingRepository;
+import lessons.lesson06.db.Flight;
+import lessons.lesson06.db.FlightGenerator;
+import lessons.lesson06.db.FlightRepository;
+import lessons.lesson06.handlers.BookingStateHandler;
+import lessons.lesson06.handlers.FlightStateHandler;
+import lessons.lesson06.service.BookingService;
+import lessons.lesson06.service.FlightService;
+import lessons.lesson06.service.KeyboardService;
 import lessons.lesson06.service.PlaneDisplayService;
 import lessons.lesson06.service.UserInputService;
-import lessons.lesson06.utils.Utils;
+import lessons.lesson06.utils.ApplicationStateHolder;
 
 import java.util.Map;
 import java.util.Scanner;
@@ -13,31 +21,20 @@ import java.util.Scanner;
 public class BookingApplication {
     public static void main(String[] args) {
         try (Scanner scanner = new Scanner(System.in)) {
-            BookingSystem bookingSystem = getBookingSystem(scanner);
+            ApplicationStateHolder applicationStateHolder = new ApplicationStateHolder();
 
-            bookingSystem.printPlane();
-            printKeyboard();
-            System.out.print("Choose action: ");
+            BookingService bookingService = getBookingSystem(scanner, applicationStateHolder);
+            BookingStateHandler bookingStateHandler = new BookingStateHandler(scanner, bookingService, applicationStateHolder);
+
+            FlightService flightService = getFlightService(applicationStateHolder, scanner);
+            FlightStateHandler flightStateHandler = new FlightStateHandler(scanner, flightService);
+
 
             while (true) {
-                String choice = scanner.nextLine();
+                switch (applicationStateHolder.getState()) {
+                    case FLIGHT_LIST -> flightStateHandler.handle();
 
-                switch (choice) {
-                    case "I" -> {
-                        bookingSystem.getBookingFlight();
-                        printKeyboard();
-                        System.out.print("Choose action: ");
-                    }
-
-                    case "B" -> {
-                        bookingSystem.bookASeat();
-                        Utils.clearTerminal();
-                        bookingSystem.printPlane();
-                        printKeyboard();
-                        System.out.print("Choose action: ");
-                    }
-
-                    case "Q" -> System.exit(0);
+                    case BOOKING_STATE -> bookingStateHandler.handle();
                 }
             }
 
@@ -47,13 +44,18 @@ public class BookingApplication {
         }
     }
 
-    public static void printKeyboard() {
-        System.out.println("\n[I] - Get booking info | [B] - Book a seat | [Q] - Quit");
+
+    public static FlightService getFlightService(final ApplicationStateHolder applicationStateHolder, final Scanner scanner) {
+        Map<Integer, Flight> flights = FlightGenerator.getFlights();
+
+        FlightRepository flightRepository = new FlightRepository(flights);
+
+        return new FlightService(applicationStateHolder, flightRepository, scanner);
     }
 
 
-    public static BookingSystem getBookingSystem(final Scanner scanner) throws Exception {
-        Map<String, Booking> data = BookingDbManager.getData();
+    public static BookingService getBookingSystem(final Scanner scanner, final ApplicationStateHolder applicationStateHolder) throws Exception {
+        Map<Integer, Map<String, Booking>> data = BookingDbManager.getData();
 
         BookingRepository bookingRepository = new BookingRepository(data);
 
@@ -61,6 +63,6 @@ public class BookingApplication {
 
         PlaneDisplayService planeDisplayService = new PlaneDisplayService();
 
-        return new BookingSystem(userInputService, bookingRepository, planeDisplayService);
+        return new BookingService(userInputService, bookingRepository, planeDisplayService, applicationStateHolder);
     }
 }
