@@ -119,12 +119,13 @@ public class BookingDbManager {
             return;
         }
 
-        List<String> prefixList = bookings.stream().map(b -> String.format("%s;", b.getCode())).toList();
+        List<String> prefixList = bookings.stream().map(b -> String.format("%s", b.getCode())).toList();
 
         File dbFile = new File(DB_FILE_PATH);
         File tempFile = File.createTempFile("bookingDbReplace", ".tmp");
 
         try (FileReader fileReader = new FileReader(dbFile); BufferedReader reader = new BufferedReader(fileReader); FileWriter fileWriter = new FileWriter(tempFile); BufferedWriter writer = new BufferedWriter(fileWriter)) {
+
             String line;
             while ((line = reader.readLine()) != null) {
                 String prefix = line.split(";")[0];
@@ -136,6 +137,8 @@ public class BookingDbManager {
             }
         }
 
+        boolean renamed = tempFile.renameTo(dbFile);
+        if (!renamed) throw new IOException("Booking update failed");
     }
 
     private static void bulkCreateBookingInfo(final List<Booking> bookings) throws IOException {

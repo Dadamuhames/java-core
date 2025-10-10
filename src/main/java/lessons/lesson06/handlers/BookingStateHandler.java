@@ -19,7 +19,7 @@ public class BookingStateHandler {
         this.stateHolder = stateHolder;
     }
 
-    public void handle() {
+    public void handle() throws Exception {
         bookingSystem.clearUnpaidBookings();
         Utils.clearTerminal();
         bookingSystem.printPlane();

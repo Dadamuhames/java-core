@@ -52,7 +52,7 @@ public class BookingRepository {
         BookingDbManager.updateBookingInfo(booking);
     }
 
-    public void bulkDelete(final List<Booking> bookings) throws IOException {
+    public void bulkDelete(final List<Booking> bookings) throws IOException, Exception {
         for (Booking booking : bookings) {
             data.get(booking.getFlightId()).remove(booking.getCode());
         }

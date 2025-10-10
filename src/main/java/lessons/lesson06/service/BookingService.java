@@ -116,16 +116,12 @@ public class BookingService {
         System.out.println("=================\n");
     }
 
-    public void clearUnpaidBookings() {
+    public void clearUnpaidBookings() throws Exception {
         Flight flight = applicationStateHolder.getCurrentFlight();
 
         List<Booking> outdatedBookings = bookingRepository.findOutdatedBookings(flight.id());
 
-        try {
-            bookingRepository.bulkDelete(outdatedBookings);
-        } catch (IOException e) {
-            System.out.printf("Error - %s\n", e.getMessage());
-        }
+        bookingRepository.bulkDelete(outdatedBookings);
     }
 
     public void changeBookingStatus() {
