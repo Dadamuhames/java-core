@@ -124,15 +124,12 @@ public class BookingService {
         bookingRepository.bulkDelete(outdatedBookings);
     }
 
-    public void changeBookingStatus() {
+    public void changeBookingStatus() throws Exception {
         System.out.println("Changing booking status to paid");
 
-        try {
-            Booking booking = getBooking();
-            booking.setStatus(BookingStatus.PAID);
-            bookingRepository.updateStatus(booking);
-        } catch (Exception e) {
-            System.out.println("Seat is not booked");
-        }
+        Booking booking = getBooking();
+        booking.setStatus(BookingStatus.PAID);
+        bookingRepository.updateStatus(booking);
+        System.out.println();
     }
 }

@@ -21,14 +21,13 @@ public class BookingStateHandler {
 
     public void handle() throws Exception {
         bookingSystem.clearUnpaidBookings();
+
         Utils.clearTerminal();
         bookingSystem.printPlane();
-        KeyboardService.printBookingKeyboard();
-        System.out.print("Chose action: ");
-        String choice = scanner.nextLine();
+
+        String choice = getChoice(scanner);
 
         boolean isShowingPlaneScreen = true;
-
         String message = null;
 
         while (isShowingPlaneScreen) {
@@ -48,8 +47,12 @@ public class BookingStateHandler {
                 }
 
                 case "S" -> {
-                    bookingSystem.changeBookingStatus();
-                    message = "Booking status changed to: PAID";
+                    try {
+                        bookingSystem.changeBookingStatus();
+                        message = "Booking status changed to: PAID";
+                    } catch (Exception e) {
+                        message = e.getMessage();
+                    }
                 }
 
                 case "Q" -> System.exit(0);
@@ -64,13 +67,18 @@ public class BookingStateHandler {
             }
 
             if (!choice.equals("L")) {
-                KeyboardService.printBookingKeyboard();
-                System.out.print("Chose action: ");
-                choice = scanner.nextLine();
+                choice = getChoice(scanner);
             }
 
             // clear unpaid bookings
             bookingSystem.clearUnpaidBookings();
         }
+    }
+
+
+    public String getChoice(final Scanner scanner) {
+        KeyboardService.printBookingKeyboard();
+        System.out.print("Chose action: ");
+        return scanner.nextLine();
     }
 }
